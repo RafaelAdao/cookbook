@@ -5,4 +5,4 @@ The aim of this repository is to provide a collection of programming recipes tha
 ## Table of Contents
 
 - Apache Beam
-  - [Pubsub to BigTable](pubsub-to-bigtable/README.md)
+  - [Pubsub to BigTable](pubsub-to-bigtable/)
