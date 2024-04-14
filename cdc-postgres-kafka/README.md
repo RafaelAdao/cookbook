@@ -172,6 +172,7 @@ curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" 
     "plugin.name": "pgoutput"
   }
 }'
+```
 
 Let's check the status of the connector:
 
