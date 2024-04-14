@@ -6,3 +6,5 @@ The aim of this repository is to provide a collection of programming recipes tha
 
 - Apache Beam
   - [Pubsub to BigTable](pubsub-to-bigtable/)
+- Change Data Capture
+  - [cdc-postgres-kafka](cdc-postgres-kafka/)
