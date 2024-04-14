@@ -256,10 +256,8 @@ Now, the important field is the `op` field. The `op` field specifies the operati
 
 Let's change the data in the `products` table to see the data change in the `inventory.public.products` topic:
 
-```sql
---docker exec -it postgres psql -U postgres
-\c inventory;
-UPDATE products SET weight = 0.5 WHERE name = 'hammer';
+```bash
+docker exec postgres psql -U postgres -d inventory -c "UPDATE products SET weight = 0.5 WHERE name = 'hammer'"
 ```
 
 The `inventory.public.products` topic should now contain the data change.
@@ -283,10 +281,44 @@ The `inventory.public.products` topic should now contain the data change.
 }
 ```
 
-The `op` field now has the 'u' value, which means that the row was updated. The `after` field contains the updated data. The `before` field contains 'null'. Sometimes you want to see the previous data for some table. You must change the [REPLICA IDENTITY](https://www.postgresql.org/docs/current/static/sql-altertable.html#SQL-CREATETABLE-REPLICA-IDENTITY) of the table, according to the [Debezium documentation](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-replica-identity). Like:
+The `op` field now has the 'u' value, which means that the row was updated. The `after` field contains the updated data. The `before` field contains 'null'. Sometimes you want to see the previous data for some table. You must change the [REPLICA IDENTITY](https://www.postgresql.org/docs/current/static/sql-altertable.html#SQL-CREATETABLE-REPLICA-IDENTITY) of the table. Also, see the [Debezium documentation](https://debezium.io/documentation/reference/stable/connectors/postgresql.html#postgresql-replica-identity) for more information.
 
-```sql
-ALTER TABLE products REPLICA IDENTITY FULL;
+Changing the `REPLICA IDENTITY` of the `products` table to `FULL` will make the `before` field contain the previous data on update and delete operations:
+
+```bash
+docker exec postgres psql -U postgres -d inventory -c "ALTER TABLE products REPLICA IDENTITY FULL"
+```
+
+Now, let's update the `products` table again:
+
+```bash
+docker exec postgres psql -U postgres -d inventory -c "UPDATE products SET weight = 1.5 WHERE name = 'hammer'"
+```
+
+The `inventory.public.products` topic should now contain the data change:
+
+```json
+{
+  "schema": {...},
+  "payload": {
+    "before": {
+      "id": "1bf715d4-4331-4d76-b37c-0a967844a019",
+      "name": "hammer",
+      "weight": 0.15,
+      "created_at": "2024-04-14T13:28:45.803302Z"
+    },
+    "after": {
+      "id": "1bf715d4-4331-4d76-b37c-0a967844a019",
+      "name": "hammer",
+      "weight": 1.5,
+      "created_at": "2024-04-14T13:28:45.803302Z"
+    },
+    "source": {...},
+    "op": "u",
+    "ts_ms": 1713102044174,
+    "transaction": null
+  }
+}
 ```
 
 Now the `before` field will contain the previous data on update and delete operations.
