@@ -180,13 +180,21 @@ Let's check the status of the connector:
 curl -H "Accept:application/json" localhost:8083/connectors/inventory-connector/status
 ```
 
+If the connector is running, you should see a response like this:
+
+```json
+{"name":"inventory-connector","connector":{"state":"RUNNING","worker_id":"172.17.0.5:8083"},"tasks":[{"id":0,"state":"RUNNING","worker_id":"172.17.0.5:8083"}],"type":"source"}
+```
+
 Let's check the topics created by the connector:
 
 ```bash
 docker exec connect /kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
 ```
 
-Let's consume the `inventory.public.products` topic:
+You should see the `inventory.public.products` topic.
+
+Know, let's consume the `inventory.public.products` topic:
 
 ```bash
 docker exec connect /kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic inventory.public.products --from-beginning
